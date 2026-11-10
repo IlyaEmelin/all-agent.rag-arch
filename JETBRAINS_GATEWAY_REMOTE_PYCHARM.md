@@ -11,7 +11,7 @@
 SSH-подключение:
 
 ```text
-Host: 62.84.115.245
+Host: 51.250.72.209
 User: ubuntu
 Port: 22
 Private key: C:\.ssh\id_ed25519
@@ -24,7 +24,7 @@ Private key: C:\.ssh\id_ed25519
 На локальной машине Windows в PowerShell:
 
 ```powershell
-ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@62.84.115.245
+ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@51.250.72.209
 ```
 
 Если подключение успешно, можно проверить проект:
@@ -43,7 +43,7 @@ ls -la /home/ubuntu/rag-vector-db
 4. Указать:
 
    ```text
-   Host: 62.84.115.245
+   Host: 51.250.72.209
    User: ubuntu
    Port: 22
    Authentication: Key pair
@@ -135,7 +135,7 @@ Connection refused: getsockopt
 Все команды ниже выполняются **на удалённом сервере** после подключения по SSH:
 
 ```powershell
-ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@62.84.115.245
+ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@51.250.72.209
 ```
 
 ### 5.1. Установить Git
@@ -292,22 +292,63 @@ cd /home/ubuntu/rag-vector-db
 
 ---
 
-## 6. Разворачивание Python-окружения и установка requirements.txt
+## 6. Установка Python 3.11 на сервер
 
-Команды выполняются **на удалённом сервере** в директории проекта.
+Команды выполняются **на удалённом сервере**.
 
-### 6.1. Установить Python venv
+Проверить текущую версию Python:
+
+```bash
+python3 --version
+```
+
+Установить Python 3.11 и модуль для виртуальных окружений:
 
 ```bash
 sudo apt update
-sudo apt install -y python3 python3-venv python3-pip
+sudo apt install -y software-properties-common
+sudo add-apt-repository -y ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install -y python3.11 python3.11-venv python3.11-dev
 ```
 
-### 6.2. Создать и активировать виртуальное окружение
+Проверить установку:
+
+```bash
+python3.11 --version
+```
+
+Ожидаемый результат должен начинаться с:
+
+```text
+Python 3.11
+```
+
+Если команда `sudo add-apt-repository -y ppa:deadsnakes/ppa` недоступна, сначала установите пакет `software-properties-common`:
+
+```bash
+sudo apt update
+sudo apt install -y software-properties-common
+```
+
+---
+
+## 7. Разворачивание Python-окружения и установка requirements.txt
+
+Команды выполняются **на удалённом сервере** в директории проекта.
+
+### 7.1. Установить Python venv
+
+```bash
+sudo apt update
+sudo apt install -y python3.11-venv python3-pip
+```
+
+### 7.2. Создать и активировать виртуальное окружение
 
 ```bash
 cd /home/ubuntu/<REPOSITORY>
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -315,7 +356,7 @@ source .venv/bin/activate
 
 ```bash
 cd /home/ubuntu/rag-vector-db
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -325,7 +366,7 @@ source .venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
 ```
 
-### 6.3. Создать requirements.txt
+### 7.3. Создать requirements.txt
 
 Если в репозитории уже есть `requirements.txt`, этот шаг можно пропустить.
 
@@ -351,7 +392,7 @@ EOF
 
 В списке выше `chonkie==1.6.7` указан один раз, потому что одна и та же зависимость не должна дублироваться в `requirements.txt`.
 
-### 6.4. Установить зависимости из requirements.txt
+### 7.4. Установить зависимости из requirements.txt
 
 ```bash
 pip install -r requirements.txt
@@ -364,7 +405,7 @@ pip install pymupdf4llm==1.27.2.3 pdfplumber==0.11.9 beautifulsoup4==4.14.3 lxml
 pip install tiktoken==0.13.0 razdel==0.5.0 chonkie==1.6.7
 ```
 
-### 6.5. Проверить установку
+### 7.5. Проверить установку
 
 ```bash
 python -m pip check
@@ -386,7 +427,7 @@ PY
 
 ---
 
-## 7. Обновление NVIDIA-драйвера на удалённой машине
+## 8. Обновление NVIDIA-драйвера на удалённой машине
 
 Этот раздел нужен, если код с GPU падает из-за слишком старого NVIDIA-драйвера, например при запуске:
 
@@ -404,17 +445,17 @@ RuntimeError: The NVIDIA driver on your system is too old
 
 Такое может произойти, если установленный `torch` собран под более новую CUDA-версию, чем поддерживает текущий драйвер на сервере.
 
-### 7.1. Подключиться к серверу
+### 8.1. Подключиться к серверу
 
 На локальной машине Windows в PowerShell:
 
 ```powershell
-ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@62.84.115.245
+ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@51.250.72.209
 ```
 
 Все дальнейшие команды выполняются **на удалённом сервере**.
 
-### 7.2. Обновить драйвер через Ubuntu
+### 8.2. Обновить драйвер через Ubuntu
 
 ```bash
 # 1. Посмотреть текущую версию драйвера и GPU
@@ -439,10 +480,10 @@ sudo reboot
 После команды `sudo reboot` SSH-сессия оборвётся. Нужно подождать 30–90 секунд и подключиться заново:
 
 ```powershell
-ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@62.84.115.245
+ssh -i C:\.ssh\id_ed25519 -o IdentitiesOnly=yes ubuntu@51.250.72.209
 ```
 
-### 7.3. Проверить NVIDIA-драйвер после перезагрузки
+### 8.3. Проверить NVIDIA-драйвер после перезагрузки
 
 ```bash
 nvidia-smi
@@ -461,7 +502,7 @@ CUDA Version: 12.2
 nvidia-driver-595-open
 ```
 
-### 7.4. Проверить PyTorch CUDA
+### 8.4. Проверить PyTorch CUDA
 
 ```bash
 cd ~/rag-vector-db
@@ -486,7 +527,7 @@ cuda available True
 gpu Tesla T4
 ```
 
-### 7.5. Проверить SentenceTransformer на CUDA
+### 8.5. Проверить SentenceTransformer на CUDA
 
 ```bash
 cd ~/rag-vector-db
@@ -507,7 +548,7 @@ PY
 
 Если модель загрузилась без ошибки и напечатала `MODEL_OK`, значит `SentenceTransformer` может использовать GPU.
 
-### 7.6. Примечания по установке драйвера
+### 8.6. Примечания по установке драйвера
 
 Во время установки драйвера через `ubuntu-drivers autoinstall` могут появиться сообщения вроде:
 
