@@ -337,13 +337,6 @@ sudo apt install -y software-properties-common
 
 Команды выполняются **на удалённом сервере** в директории проекта.
 
-### 7.1. Установить Python venv
-
-```bash
-sudo apt update
-sudo apt install -y python3.11-venv python3-pip
-```
-
 ### 7.2. Создать и активировать виртуальное окружение
 
 ```bash
@@ -374,19 +367,9 @@ python -m pip install --upgrade pip setuptools wheel
 
 ```bash
 cat > requirements.txt <<'EOF'
-pymupdf4llm==1.27.2.3
-pdfplumber==0.11.9
-beautifulsoup4==4.14.3
-lxml==6.1.1
-trafilatura==2.0.0
-charset-normalizer==3.4.7
-ftfy==6.3.1
-chonkie==1.6.7
-tiktoken==0.13.0
-razdel==0.5.0
-numpy==2.3.4
-datasets==4.4.1
-sentence-transformers==5.1.2
+sentence-transformers==3.3.1 
+chromadb==1.5.9 
+numpy==1.26.4
 EOF
 ```
 
@@ -396,13 +379,6 @@ EOF
 
 ```bash
 pip install -r requirements.txt
-```
-
-Эквивалентные команды установки вручную:
-
-```bash
-pip install pymupdf4llm==1.27.2.3 pdfplumber==0.11.9 beautifulsoup4==4.14.3 lxml==6.1.1 trafilatura==2.0.0 charset-normalizer==3.4.7 ftfy==6.3.1 chonkie==1.6.7
-pip install tiktoken==0.13.0 razdel==0.5.0 chonkie==1.6.7
 ```
 
 ### 7.5. Проверить установку
